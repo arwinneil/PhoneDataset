@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace phone_dataset_builder
 {
@@ -209,6 +210,20 @@ namespace phone_dataset_builder
             return PhoneModels;
         }
 
+        private static String getContent(ref StreamReader sr)
+        {
+            String line = "";
+            while (!line.Contains("</td>"))
+            {
+                line += sr.ReadLine();
+            }
+            line = new Regex("<[^>]*>").Replace(line, "");
+            line = line.Replace("\n", "");
+            line = line.Replace("\r", "");
+            line = line.Replace(",", "|");
+            return line;
+        }
+
         private static specs getSpecs(string url, string model)
         {
             WebClient client = new WebClient();
@@ -273,6 +288,11 @@ namespace phone_dataset_builder
             string colors = "";
             string price_group = "";
             string img_url = "";
+            string test_display = "";
+            string test_performance = "";
+            string test_loudspeaker = "";
+            string test_audio_quality = "";
+            string test_battery_life = "";
             while ((line = sr.ReadLine()) != null)
             {
                 if (line.IndexOf("<div id=\"specs-list\">") == 0)
@@ -769,6 +789,7 @@ namespace phone_dataset_builder
                             continue;
                         }
 
+
                         if (line.IndexOf("Price") > -1)
                         {
                             line = sr.ReadLine();
@@ -795,6 +816,45 @@ namespace phone_dataset_builder
                         //line = line.Remove(line.IndexOf("<"), ((line.Length) - (line.IndexOf("<"))));
 
                         //Console.Write(line + ",");
+                    }
+
+                    if (line.IndexOf("lab_tests") > -1)
+                    {
+
+                        if (line.IndexOf("Performance") > -1)
+                        {
+                            test_performance = getContent(ref sr);
+
+                            continue;
+                        }
+
+                        if (line.IndexOf("Display") > -1)
+                        {
+                            test_display = getContent(ref sr);
+
+                            continue;
+                        }
+
+                        if (line.IndexOf("Loudspeaker") > -1)
+                        {
+                            test_loudspeaker = getContent(ref sr);
+
+                            continue;
+                        }
+
+                        if (line.IndexOf("Audio quality") > -1)
+                        {
+                            test_audio_quality = getContent(ref sr);
+
+                            continue;
+                        }
+
+                        if (line.IndexOf("Battery life") > -1)
+                        {
+                            test_battery_life = getContent(ref sr);
+
+                            continue;
+                        }
                     }
                 }
             }
@@ -839,7 +899,12 @@ namespace phone_dataset_builder
              battery,
              colors,
              price_group,
-             img_url
+             img_url,
+              test_display,
+              test_performance,
+              test_loudspeaker,
+              test_audio_quality,
+              test_battery_life
                 );
 
             return Specs;
@@ -853,7 +918,8 @@ namespace phone_dataset_builder
                 try
                 {
                     StreamWriter dataset = new StreamWriter("phone_dataset.csv");
-                    dataset.WriteLine("brand,model,network_technology,2G_bands,3G_bands,4G_bands,network_speed,GPRS,EDGE,announced,status,dimentions,weight_g,weight_oz,SIM,display_type,display_resolution,display_size,OS,CPU,Chipset,GPU,memory_card,internal_memory,RAM,primary_camera,secondary_camera,loud_speaker,audio_jack,WLAN,bluetooth,GPS,NFC,radio,USB,sensors,battery,colors,approx_price_EUR,img_url");
+                    dataset.WriteLine("brand,model,network_technology,2G_bands,3G_bands,4G_bands,network_speed,GPRS,EDGE,announced,status,dimentions,weight_g,weight_oz,SIM,display_type,display_resolution,display_size,OS,CPU,Chipset,GPU,memory_card,internal_memory,RAM,primary_camera,secondary_camera,loud_speaker,audio_jack,WLAN,bluetooth,GPS,NFC,radio,USB,sensors,battery,colors,approx_price_EUR,img_url,test_display,test_performance,test_loudspeaker,test_audio_quality,test_battery_life");
+
 
                     dataset.Close();
                     tryagain = false;
@@ -937,7 +1003,14 @@ namespace phone_dataset_builder
             Specs.price_group = Specs.price_group.Replace(',', '|');
             Specs.img_url = Specs.img_url.Replace(',', '|');
 
-            dataset.WriteLine(brand + "," + model + "," + Specs.network_technology + "," + Specs.twoG_bands + "," + Specs.threeG_bands + "," + Specs.fourG_bands + "," + Specs.network_speed + "," + Specs.GPRS + "," + Specs.EDGE + "," + Specs.announced + "," + Specs.status + "," + Specs.dimentions + "," + Specs.weight_g + "," + Specs.weight_oz + "," + Specs.SIM + "," + Specs.display_type + "," + Specs.display_resolution + "," + Specs.display_size + "," + Specs.OS + "," + Specs.CPU + "," + Specs.Chipset + "," + Specs.GPU + "," + Specs.memory_card + "," + Specs.internal_memory + "," + Specs.RAM + "," + Specs.primary_camera + "," + Specs.secondary_camera + "," + Specs.loud_speaker + "," + Specs.audio_jack + "," + Specs.WLAN + "," + Specs.bluetooth + "," + Specs.GPS + "," + Specs.NFC + "," + Specs.radio + "," + Specs.USB + "," + Specs.sensors + "," + Specs.battery + "," + Specs.colors + "," + Specs.price_group + "," + Specs.img_url);
+            Specs.test_display = Specs.test_display.Replace(',', '|');
+            Specs.test_performance = Specs.test_performance.Replace(',', '|');
+            Specs.test_loudspeaker = Specs.test_loudspeaker.Replace(',', '|');
+            Specs.test_audio_quality = Specs.test_audio_quality.Replace(',', '|');
+            Specs.test_battery_life = Specs.test_battery_life.Replace(',', '|');
+
+            dataset.WriteLine(brand + "," + model + "," + Specs.network_technology + "," + Specs.twoG_bands + "," + Specs.threeG_bands + "," + Specs.fourG_bands + "," + Specs.network_speed + "," + Specs.GPRS + "," + Specs.EDGE + "," + Specs.announced + "," + Specs.status + "," + Specs.dimentions + "," + Specs.weight_g + "," + Specs.weight_oz + "," + Specs.SIM + "," + Specs.display_type + "," + Specs.display_resolution + "," + Specs.display_size + "," + Specs.OS + "," + Specs.CPU + "," + Specs.Chipset + "," + Specs.GPU + "," + Specs.memory_card + "," + Specs.internal_memory + "," + Specs.RAM + "," + Specs.primary_camera + "," + Specs.secondary_camera + "," + Specs.loud_speaker + "," + Specs.audio_jack + "," + Specs.WLAN + "," + Specs.bluetooth + "," + Specs.GPS + "," + Specs.NFC + "," + Specs.radio + "," + Specs.USB + "," + Specs.sensors + "," + Specs.battery + "," + Specs.colors + "," + Specs.price_group 
+                              + "," + Specs.img_url + "," + Specs.test_display + "," + Specs.test_performance + "," + Specs.test_loudspeaker + "," + Specs.test_audio_quality + "," + Specs.test_battery_life);
 
             dataset.Close();
         }
