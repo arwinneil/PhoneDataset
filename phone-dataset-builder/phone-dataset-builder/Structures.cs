@@ -68,11 +68,11 @@
         public string colors;
         public string price_group;
         public string img_url;
-		public string test_display;
-		public string test_performance;
-		public string test_loudspeaker;
-		public string test_audio_quality;
-		public string test_battery_life;
+        public string test_display;
+        public string test_performance;
+        public string test_loudspeaker;
+        public string test_audio_quality;
+        public string test_battery_life;
 
         // Constructor:
         public specs(string network_technology,
@@ -113,11 +113,11 @@
          string colors,
          string price_group,
          string img_url,
-		 string test_display,
-		 string test_performance,
-		 string test_loudspeaker,
-		 string test_audio_quality,
-		 string test_battery_life
+         string test_display,
+         string test_performance,
+         string test_loudspeaker,
+         string test_audio_quality,
+         string test_battery_life
             )
         {
             this.network_technology = network_technology;
@@ -159,11 +159,11 @@
             this.price_group = price_group;
             this.img_url = img_url;
 
-			this.test_display = test_display;
-			this.test_performance = test_performance;
-			this.test_loudspeaker = test_loudspeaker;
-			this.test_audio_quality = test_audio_quality;
-			this.test_battery_life = test_battery_life;
+            this.test_display = test_display;
+            this.test_performance = test_performance;
+            this.test_loudspeaker = test_loudspeaker;
+            this.test_audio_quality = test_audio_quality;
+            this.test_battery_life = test_battery_life;
         }
     }
 }
